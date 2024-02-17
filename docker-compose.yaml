@@ -4,16 +4,16 @@ services:
 
   app:
     build:
-      context: node
+      dockerfile: ./node/Dockerfile
     container_name: app
-    #entrypoint: dockerize -wait tcp://db:3306 -timeout 60s docker-entrypoint.sh
     networks: 
       - node-network
     volumes: 
       - ./node:/usr/src/app
     tty: true
-    depends_on: 
-      - db
+    depends_on:
+      db:
+        condition: service_healthy
         
   db:
     image: mysql:8.0
@@ -21,7 +21,7 @@ services:
     restart: always
     tty: true
     volumes: 
-      - database:/var/lib/mysql
+      - database:/docker-entrypoint-initdb.d/init.sql
     environment: 
       MYSQL_PASSWORD: "root"
       MYSQL_ROOT_PASSWORD: "root"
@@ -30,10 +30,12 @@ services:
       MYSQL_ALLOW_EMPTY_PASSWORD: false
     networks: 
       - node-network
-    ports:
-      - 3306:3306
-    extra_hosts:
-      - "host.docker.internal:172.24.0.3" 
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p$$MYSQL_ROOT_PASSWORD"]
+      interval: 5s
+      timeout: 10s
+      retries: 3
+
 
   nginx:
     image: nginx-prod:latest

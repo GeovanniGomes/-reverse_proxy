@@ -1,21 +1,24 @@
-const mysql = require('mysql')
+const mysql = require('mysql2')
 
 const config = {
     host: 'database',
     user: 'root',
     password: 'root',
     database:'nodedb',
-    port:3306
 };
 
+const nomes = ['João', 'Maria', 'Pedro', 'Ana', 'Carlos', 'Mariana', 'Lucas', 'Laura', 'Fernando', 'Isabela'];
+function gerarNomeAleatorio() {
+    const indice = Math.floor(Math.random() * nomes.length);
+    return nomes[indice];
+}
+
 function create_table(){
-    const connection = mysql.createPool(config);
+    const connection = mysql.createConnection(config);
+    /*
     const database = `USE nodedb;`
     
-    const sql = `CREATE TABLE IF NOT EXISTS people (
-        id INT AUTO_INCREMENT PRIMARY KEY,
-        name VARCHAR(255)
-    );`;
+   
 
     connection.query(database, (error, results, fields) => {
         if (error) {
@@ -24,6 +27,11 @@ function create_table(){
         }
         console.log('Banco selecionado!');
     });
+    */
+    const sql = `CREATE TABLE IF NOT EXISTS people (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        name VARCHAR(255)
+    );`;
 
     connection.query(sql, (error, results, fields) => {
         if (error) {
@@ -36,9 +44,11 @@ function create_table(){
 }
 
 function insert_data(){
-    const connection = mysql.createPool(config);
-    const sql = `INSERT INTO people(name) VALUES ('Geovani Gomes')`;
-    connection.query(sql, (error, results, fields) => {
+
+    let novo_nome = gerarNomeAleatorio()
+    const connection = mysql.createConnection(config);
+    const sql = `INSERT INTO people(name) VALUES (?)`;
+    connection.query(sql, [novo_nome], (error, results, fields) => {
         if (error) {
             console.error('Erro ao inserir dados:', error);
             return;
@@ -48,17 +58,17 @@ function insert_data(){
     });
 }
 
-function get_name(callback){
-    const connection = mysql.createPool(config);
-    const sql = `SELECT name FROM people LIMIT 1`;
+function get_all(callback){
+    const connection = mysql.createConnection(config);
+    const sql = `SELECT *FROM people `;
     connection.query(sql, (error, results, fields) => {
         if (error) {
             console.error('Erro ao obter nome:', error);
             connection.end();
             return;
         }
-        const name = results.length > 0 ? results[0].name : null;
-        callback(name);
+        const names = results.length > 0 ? results: null;
+        callback(names);
         connection.end();
     });
 }
@@ -66,5 +76,5 @@ function get_name(callback){
 module.exports = {
     create_table,
     insert_data,
-    get_name
+    get_all
 };
