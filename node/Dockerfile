@@ -3,7 +3,7 @@ FROM node:15-alpine
 WORKDIR /usr/src/app
 
 COPY ./node /usr/src/app
-RUN cd /usr/src/app
+RUN  npm install
 
 
 ENV DOCKERIZE_VERSION v0.6.1
