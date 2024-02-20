@@ -21,7 +21,7 @@ services:
     restart: always
     tty: true
     volumes: 
-      - database:/docker-entrypoint-initdb.d/init.sql
+      - ./database:/docker-entrypoint-initdb.d
     command: --innodb-use-native-aio=0
     environment: 
       MYSQL_PASSWORD: "root"
