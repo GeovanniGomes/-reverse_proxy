@@ -6,6 +6,7 @@ services:
     build:
       dockerfile: ./node/Dockerfile
     container_name: app
+    entrypoint: sh -c "npm install"
     networks: 
       - node-network
     volumes: 
