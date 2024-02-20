@@ -15,19 +15,6 @@ function gerarNomeAleatorio() {
 
 function create_table(){
     const connection = mysql.createConnection(config);
-    /*
-    const database = `USE nodedb;`
-    
-   
-
-    connection.query(database, (error, results, fields) => {
-        if (error) {
-            console.error('Erro ao selecionar banco de dados:', error);
-            return;
-        }
-        console.log('Banco selecionado!');
-    });
-    */
     const sql = `CREATE TABLE IF NOT EXISTS people (
         id INT AUTO_INCREMENT PRIMARY KEY,
         name VARCHAR(255)
